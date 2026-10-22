@@ -1,4 +1,4 @@
-/* Kinem Kollektiv — motion, glitter & manners */
+/* Kollektiv Kinem — motion, glitter & manners */
 (() => {
   const root = document.documentElement;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -106,6 +106,7 @@
       ring.classList.toggle("is-hover", !!t);
       const txt = t && t.dataset.cursor;
       ring.classList.toggle("has-label", !!txt);
+      dot.classList.toggle("is-hidden", !!txt); // the dot would sit on top of the label
       if (txt) label.textContent = txt;
     });
 

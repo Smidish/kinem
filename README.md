@@ -1,4 +1,4 @@
-# Kinem Kollektiv – Website
+# Kollektiv Kinem – Website
 
 Plain static site: open `index.html` in a browser. No build step.
 
@@ -16,7 +16,7 @@ src/pics/               Originale – liegen nur lokal, werden NICHT hochgeladen
 ## Inhalte ändern
 - **Texte** stehen direkt im HTML. Alle Zitate, Termine, Fakten und Beschreibungen sind Platzhalter.
 - **Bilder tauschen:** komprimierte Datei nach `assets/img/` legen (siehe unten) und den `src` im HTML anpassen.
-- **Sticker:** `<div class="sticker …" data-fly="left|right|up">`. `data-fly` bestimmt, von wo der Sticker beim Scrollen hereinfliegt. Varianten: `sticker--dark`, `sticker--white`, `sticker--tape`, `sticker--tag`, `sticker--stamp`.
+- **Sticker:** `<div class="sticker …" data-fly="left|right|up">`. `data-fly` bestimmt, von wo der Sticker beim Scrollen hereinfliegt. Varianten: `sticker--dark`, `sticker--white`, `sticker--tape` (Klebestreifen, für alle Zitate von Kinems und Gästen).
 - **Parallax-Ebenen:** jedes Element mit `data-speed="…"` scrollt schneller (z. B. `2`) oder langsamer/gegenläufig (z. B. `-0.6`).
 - **Akzentfarbe:** `--pink` in `assets/css/style.css`.
 

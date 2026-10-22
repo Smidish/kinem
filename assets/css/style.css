@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Kinem Kollektiv — dark, baby-pink, a little bit of glitter
+   Kollektiv Kinem — dark, baby-pink, a little bit of glitter
    ========================================================================== */
 
 :root {
@@ -139,6 +139,7 @@ html.has-cursor, html.has-cursor * { cursor: none !important; }
   opacity: 0; transition: opacity 0.3s;
 }
 .has-cursor .cursor, .has-cursor .cursor-ring { opacity: 1; }
+.has-cursor .cursor.is-hidden { opacity: 0; }
 .cursor { width: 8px; height: 8px; margin: -4px 0 0 -4px; background: var(--pink); }
 .cursor-ring {
   width: 42px; height: 42px; margin: -21px 0 0 -21px;
@@ -307,24 +308,12 @@ html.has-cursor, html.has-cursor * { cursor: none !important; }
 .sticker--tape::before {
   content: ""; position: absolute; top: -12px; left: 50%;
   width: 84px; height: 24px; margin-left: -42px;
-  background: rgba(255, 255, 255, 0.38);
-  backdrop-filter: blur(2px);
+  background: rgba(236, 222, 198, 0.78);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  clip-path: polygon(2% 0, 98% 4%, 100% 100%, 0 96%);
   rotate: 4deg;
 }
-.sticker--stamp {
-  width: 150px; height: 150px; padding: 0;
-  border-radius: 50%;
-  display: grid; place-items: center; text-align: center;
-  font-family: var(--f-display); font-style: italic; font-size: 1.15rem; line-height: 1.05;
-  background: var(--bg); color: var(--pink);
-  border: 1px dashed var(--pink);
-  outline: 1px solid var(--pink); outline-offset: 6px;
-}
-.sticker--tag {
-  padding: 0.55rem 1.1rem; border-radius: 99px;
-  font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;
-  white-space: nowrap;
-}
+.sticker--mood { max-width: 300px; background: var(--pink-2); }
 .sticker h4 {
   margin: 0 0 0.4rem;
   font-family: var(--f-display); font-style: italic; font-weight: 400;
@@ -355,26 +344,25 @@ html.has-cursor, html.has-cursor * { cursor: none !important; }
 .hero {
   position: relative;
   min-height: 100svh;
-  padding: 120px var(--gut) 60px;
-  display: grid; align-content: end;
+  padding: 96px var(--gut) 48px;
+  display: grid; align-content: space-between; row-gap: 1.5rem;
   overflow: hidden; overflow: clip;
 }
 .hero__logo {
-  position: absolute; z-index: 2;
-  top: clamp(90px, 13vh, 140px); left: 50%;
-  width: clamp(170px, 24vw, 340px);
-  translate: -40% 0;
+  position: relative; z-index: 2;
+  justify-self: center;
+  width: clamp(200px, 25vw, 360px);
 }
 .hero__title {
   position: relative; z-index: 10;
-  font-size: clamp(3.6rem, 13.5vw, 15rem);
+  font-size: clamp(3.2rem, 10.5vw, 13rem);
 }
 .hero__title .line { display: block; }
 .hero__title .line--right { text-align: right; }
 .hero__meta {
   position: relative; z-index: 10;
   display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1.5rem;
-  margin-top: 2.2rem;
+  margin-top: 1.2rem;
 }
 .hero__meta p { max-width: 34ch; margin: 0; color: var(--muted); }
 .hero__photo {
@@ -382,9 +370,8 @@ html.has-cursor, html.has-cursor * { cursor: none !important; }
   box-shadow: 0 30px 60px -20px #000;
 }
 .hero__photo img { width: 100%; height: 100%; object-fit: cover; }
-.hero__photo--a { width: clamp(150px, 22vw, 340px); aspect-ratio: 3 / 4; top: 14%; left: 6%; rotate: -7deg; }
-.hero__photo--b { width: clamp(170px, 26vw, 420px); aspect-ratio: 4 / 3; top: 18%; right: 5%; rotate: 5deg; }
-.hero__photo--c { width: clamp(120px, 15vw, 240px); aspect-ratio: 1; bottom: 30%; left: 40%; rotate: 9deg; z-index: 0; opacity: 0.85; }
+.hero__photo--a { width: clamp(150px, 21vw, 330px); aspect-ratio: 3 / 4; top: 11%; left: 5%; rotate: -7deg; }
+.hero__photo--b { width: clamp(170px, 25vw, 400px); aspect-ratio: 4 / 3; top: 15%; right: 5%; rotate: 5deg; }
 .scroll-hint {
   display: inline-flex; align-items: center; gap: 0.6rem;
   font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
@@ -394,10 +381,10 @@ html.has-cursor, html.has-cursor * { cursor: none !important; }
   transform-origin: top; animation: drip 1.8s var(--ease) infinite;
 }
 @media (max-width: 760px) {
-  .hero .shape, .hero__photo--c { display: none; }
-  .hero__logo { top: 96px; translate: -50% 0; }
-  .hero__photo--a { top: 30%; left: 4%; }
-  .hero__photo--b { top: 12%; right: 4%; }
+  .hero .shape { display: none; }
+  .hero__logo { width: 56vw; margin-top: 1rem; }
+  .hero__photo--a { width: 34vw; top: 34%; left: -6vw; }
+  .hero__photo--b { width: 40vw; top: 13%; right: -8vw; }
 }
 @keyframes drip { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
 
@@ -475,7 +462,6 @@ html.has-cursor, html.has-cursor * { cursor: none !important; }
 .show__stage .s2 { top: 30%; right: -1%; --r: 4deg; }
 .show__stage .s3 { bottom: 12%; left: 6%; --r: 3deg; }
 .show__stage .s4 { bottom: 9%; right: 7%; --r: -7deg; }
-.show__stage .s5 { top: -4%; right: 22%; --r: 8deg; }
 
 @media (max-width: 860px) {
   .show__head, .show--alt .show__head { grid-template-columns: 1fr; text-align: left; margin-bottom: 1rem; }
@@ -486,7 +472,6 @@ html.has-cursor, html.has-cursor * { cursor: none !important; }
     position: relative; inset: auto; max-width: 88%;
   }
   .show__stage .sticker:nth-of-type(even) { align-self: flex-end; }
-  .show__stage .sticker--stamp { display: none; }
 }
 
 /* philosophy teaser */
