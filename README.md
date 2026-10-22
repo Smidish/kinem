@@ -1,0 +1,61 @@
+# Kinem Kollektiv – Website
+
+Plain static site: open `index.html` in a browser. No build step.
+
+```
+index.html              Startseite (Hero, 5 Shows mit Stickern, Philosophie-Teaser)
+shows/*.html            Eine Seite pro Show
+philosophie.html        Philosophie mit Gruppenfoto und Notizen
+assets/css/style.css    Farben (oben in :root), Layout, Sticker, Grid
+assets/js/main.js       Smooth Scroll, Parallax, fliegende Sticker/Bilder, Glitzer-Cursor
+assets/img/             Web-Versionen der Fotos (WebP, max. 2400 px)
+assets/video/           Show-Videos (H.264, ohne Ton)
+src/pics/               Originale – liegen nur lokal, werden NICHT hochgeladen (.gitignore)
+```
+
+## Inhalte ändern
+- **Texte** stehen direkt im HTML. Alle Zitate, Termine, Fakten und Beschreibungen sind Platzhalter.
+- **Bilder tauschen:** komprimierte Datei nach `assets/img/` legen (siehe unten) und den `src` im HTML anpassen.
+- **Sticker:** `<div class="sticker …" data-fly="left|right|up">`. `data-fly` bestimmt, von wo der Sticker beim Scrollen hereinfliegt. Varianten: `sticker--dark`, `sticker--white`, `sticker--tape`, `sticker--tag`, `sticker--stamp`.
+- **Parallax-Ebenen:** jedes Element mit `data-speed="…"` scrollt schneller (z. B. `2`) oder langsamer/gegenläufig (z. B. `-0.6`).
+- **Akzentfarbe:** `--pink` in `assets/css/style.css`.
+
+## Bilder komprimieren
+Ziel: **WebP, längste Seite 2400 px, Qualität ~78** → meist 100–400 KB pro Foto.
+
+- **Ohne Installation:** [squoosh.app](https://squoosh.app) im Browser – Bild reinziehen, rechts „WebP“, Qualität 75–80, „Resize“ auf 2400 px, Download.
+- **Viele auf einmal (Terminal):** `brew install webp`, dann pro Bild
+  `cwebp -q 78 -resize 2400 0 -metadata none original.jpg -o assets/img/name.webp`
+  (`-resize 2400 0` = 2400 px breit; bei Hochformat `-resize 0 2400`).
+- `-metadata none` bzw. Squoosh entfernen auch GPS-Daten aus Handyfotos – wichtig, bevor Bilder öffentlich online gehen.
+
+## Videos komprimieren
+Ziel: **H.264-MP4, 1080p, ohne Ton, „Fast Start“** → ca. 10–20 MB pro Minute.
+
+- **Mit App:** [HandBrake](https://handbrake.fr) (kostenlos). Preset „Fast 1080p30“, dann: Video → Constant Quality **RF 26**, Encoder Preset „Slow“; Audio → Spur entfernen; Summary → **„Web Optimized“** anhaken.
+- **Terminal:** `brew install ffmpeg`, dann
+  ```
+  ffmpeg -i original.mp4 -vf "scale=1920:-2" -c:v libx264 -preset slow -crf 26 \
+         -pix_fmt yuv420p -an -movflags +faststart assets/video/name.mp4
+  ```
+  Höhere `-crf`-Zahl = kleinere Datei (28 ist für Hintergrundvideos auch noch gut).
+- Für die Startseite reicht oft ein kurzer Loop (10–20 s, `-t 20` ergänzen). Lange Videos besser auf YouTube/Vimeo.
+- GitHub erlaubt max. 100 MB pro Datei, empfohlen sind < 50 MB.
+
+## Hosting auf GitHub Pages
+1. Auf github.com ein neues **öffentliches** Repository anlegen (z. B. `kinem-website`), ohne README.
+2. Im Terminal in diesem Ordner:
+   ```
+   git remote add origin https://github.com/DEIN-NAME/kinem-website.git
+   git push -u origin main
+   ```
+3. Im Repo: **Settings → Pages → Source: „Deploy from a branch“, Branch `main`, Ordner `/ (root)`** → Save.
+4. Nach 1–2 Minuten ist die Seite unter `https://DEIN-NAME.github.io/kinem-website/` online.
+
+Änderungen danach: `git add -A && git commit -m "…" && git push` – die Seite aktualisiert sich automatisch.
+Eigene Domain (z. B. kinem-kollektiv.de): Settings → Pages → Custom domain, plus DNS-Eintrag beim Domain-Anbieter.
+
+## Hinweise
+- Animationsbibliotheken (GSAP, Lenis) und Schriften (Fraunces, Space Grotesk, Caveat) kommen per CDN bzw. Google Fonts. Für DSGVO-Konformität die Fonts später selbst hosten.
+- Für eine öffentliche Seite in Deutschland braucht es ein echtes Impressum und eine Datenschutzerklärung (Links im Footer sind noch Platzhalter).
+- Mit „Bewegung reduzieren“ im Betriebssystem wird die Seite ruhig dargestellt.

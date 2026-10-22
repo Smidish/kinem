@@ -1,0 +1,5 @@
+# Originale (zu groß fürs Repo, enthalten teils GPS-Daten)
+src/
+
+# macOS
+.DS_Store
