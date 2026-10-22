@@ -3,6 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<script>/* password gate: hide the page until the password was entered (see main.js) */
+(function () { var k = "kinem-access", h = "6cd5776c", ok = false;
+  try { ok = localStorage.getItem(k) === h || sessionStorage.getItem(k) === h; } catch (e) {}
+  if (!ok) document.documentElement.classList.add("locked"); })();</script>
 <title>Ich sehe was, was du nicht siehst · Kollektiv Kinem</title>
 <meta name="description" content="Ich sehe was, was du nicht siehst: Eine Wand teilt die Bühne, und das Publikum sieht nur eine Seite. Nach der Pause wird getauscht, und plötzlich sieht man, was vorher verborgen war.">
 <meta name="theme-color" content="#0d0a0c">
@@ -49,7 +54,7 @@
 </section>
 
 <section>
-  <div class="bleed" data-reveal><img class="poster" src="../assets/img/ich-sehe-was-1.webp" alt="Szene aus Ich sehe was, was du nicht siehst"><video src="../assets/video/ich-sehe-was.mp4" poster="../assets/img/ich-sehe-was-1.webp" muted loop playsinline preload="none" data-autoplay></video></div>
+  <div class="bleed" data-reveal><img src="../assets/img/ich-sehe-was-1.webp" alt="Szene aus Ich sehe was, was du nicht siehst" loading="lazy" decoding="async"></div>
 </section>
 
 <section class="chapters">

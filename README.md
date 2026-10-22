@@ -9,7 +9,6 @@ philosophie.html        Philosophie mit Gruppenfoto und Notizen
 assets/css/style.css    Farben (oben in :root), Layout, Sticker, Grid
 assets/js/main.js       Smooth Scroll, Parallax, fliegende Sticker/Bilder, Glitzer-Cursor
 assets/img/             Web-Versionen der Fotos (WebP, max. 2400 px)
-assets/video/           Show-Videos (H.264, ohne Ton)
 src/pics/               Originale – liegen nur lokal, werden NICHT hochgeladen (.gitignore)
 ```
 
@@ -30,6 +29,8 @@ Ziel: **WebP, längste Seite 2400 px, Qualität ~78** → meist 100–400 KB pro
 - `-metadata none` bzw. Squoosh entfernen auch GPS-Daten aus Handyfotos – wichtig, bevor Bilder öffentlich online gehen.
 
 ## Videos komprimieren
+Aktuell ist kein Video eingebunden. Für später:
+
 Ziel: **H.264-MP4, 1080p, ohne Ton, „Fast Start“** → ca. 10–20 MB pro Minute.
 
 - **Mit App:** [HandBrake](https://handbrake.fr) (kostenlos). Preset „Fast 1080p30“, dann: Video → Constant Quality **RF 26**, Encoder Preset „Slow“; Audio → Spur entfernen; Summary → **„Web Optimized“** anhaken.
@@ -54,6 +55,15 @@ Ziel: **H.264-MP4, 1080p, ohne Ton, „Fast Start“** → ca. 10–20 MB pro Mi
 
 Änderungen danach: `git add -A && git commit -m "…" && git push` – die Seite aktualisiert sich automatisch.
 Eigene Domain (z. B. kinem-kollektiv.de): Settings → Pages → Custom domain, plus DNS-Eintrag beim Domain-Anbieter.
+
+## Passwortschutz
+Alle Seiten zeigen zuerst eine Passwortabfrage (Passwort: `kimnem`). Wer es einmal eingegeben hat, wird auf diesem Gerät nicht mehr gefragt.
+
+- **Das ist ein Sichtschutz, keine echte Sicherheit:** GitHub Pages kann nur Dateien ausliefern. Die Abfrage passiert im Browser. Wer den Quelltext öffnet oder direkte Bild-Links kennt, kommt trotzdem an die Inhalte, und das Repository selbst ist öffentlich.
+- Suchmaschinen sollen die Seite nicht listen (`<meta name="robots" content="noindex">` in jeder Seite).
+- **Passwort ändern:** den Hash des neuen Passworts (FNV-1a, kleingeschrieben) an zwei Stellen eintragen: in `assets/js/main.js` (`ACCESS_HASH`) und im kleinen Skript oben im `<head>` jeder HTML-Seite.
+- **Schutz entfernen (Livegang):** das `<script>` mit „password gate“ und die `robots`-Zeile aus dem `<head>` jeder Seite löschen.
+- Echter Passwortschutz geht z. B. mit Netlify oder Cloudflare Pages (serverseitig).
 
 ## Hinweise
 - Animationsbibliotheken (GSAP, Lenis) und Schriften (Fraunces, Space Grotesk, Caveat) kommen per CDN bzw. Google Fonts. Für DSGVO-Konformität die Fonts später selbst hosten.

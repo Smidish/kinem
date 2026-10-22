@@ -157,169 +157,225 @@
 
   function el(tag, cls) { const n = document.createElement(tag); n.className = cls; return n; }
 
-  /* ---------- everything below needs GSAP ---------- */
-  if (!hasGsap) return;
-  gsap.registerPlugin(ScrollTrigger);
+  /* ---------- password gate (a privacy screen, not real security) ---------- */
+  // The <head> of every page adds .locked unless the right hash is stored.
+  const ACCESS_KEY = "kinem-access";
+  const ACCESS_HASH = "6cd5776c";
+  const fnv1a = (str) => {
+    let h = 0x811c9dc5;
+    for (const b of new TextEncoder().encode(str)) h = Math.imul(h ^ b, 0x01000193) >>> 0;
+    return h.toString(16).padStart(8, "0");
+  };
 
-  /* smooth scroll */
-  let lenis = null;
-  if (window.Lenis && !reduce) {
-    lenis = new Lenis({ lerp: 0.085, smoothWheel: true, wheelMultiplier: 0.95 });
-    lenis.on("scroll", ScrollTrigger.update);
-    gsap.ticker.add((t) => lenis.raf(t * 1000));
-    gsap.ticker.lagSmoothing(0);
-    document.querySelectorAll('a[href^="#"]').forEach((a) =>
-      a.addEventListener("click", (e) => {
-        const target = document.querySelector(a.getAttribute("href"));
-        if (target) { e.preventDefault(); lenis.scrollTo(target, { offset: -40, duration: 1.6 }); }
-        if (nav) { nav.classList.remove("is-open"); if (toggle) toggle.textContent = "Menü"; }
-      })
-    );
+  if (root.classList.contains("locked")) initGate(startMotion);
+  else startMotion();
+
+  function initGate(onUnlock) {
+    const logo = document.querySelector(".nav__logo img");
+    const gate = el("div", "gate");
+    gate.setAttribute("role", "dialog");
+    gate.setAttribute("aria-modal", "true");
+    gate.setAttribute("aria-labelledby", "gate-title");
+    gate.innerHTML = `
+      <img class="gate__logo" src="${logo ? logo.src : ""}" alt="">
+      <h1 class="display gate__title" id="gate-title">Psst, <em>noch geheim</em></h1>
+      <p class="gate__text">Diese Seite ist noch nicht öffentlich. Bitte gib das Passwort ein.</p>
+      <form class="gate__form">
+        <label class="gate__label" for="gate-pw">Passwort</label>
+        <input id="gate-pw" type="password" autocomplete="current-password" placeholder="Passwort" required>
+        <button class="btn btn--solid" type="submit">Eintreten <span class="arrow">→</span></button>
+      </form>
+      <p class="gate__error" aria-live="polite"></p>`;
+    document.body.prepend(gate);
+    const form = gate.querySelector("form");
+    const input = gate.querySelector("input");
+    const error = gate.querySelector(".gate__error");
+    setTimeout(() => input.focus(), 50);
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (fnv1a(input.value.trim().toLowerCase()) !== ACCESS_HASH) {
+        error.textContent = "Leider falsch. Versuch's nochmal ♥";
+        form.classList.remove("is-wrong");
+        void form.offsetWidth; // restart the shake
+        form.classList.add("is-wrong");
+        input.select();
+        return;
+      }
+      try { localStorage.setItem(ACCESS_KEY, ACCESS_HASH); } catch {}
+      try { sessionStorage.setItem(ACCESS_KEY, ACCESS_HASH); } catch {}
+      root.classList.remove("locked");
+      gate.remove();
+      onUnlock();
+    });
   }
 
-  if (reduce) return;
+  /* ---------- everything below needs GSAP ---------- */
+  function startMotion() {
+    if (!hasGsap) return;
+    gsap.registerPlugin(ScrollTrigger);
 
-  /* marquee that speeds up with scroll velocity */
-  document.querySelectorAll(".marquee__track").forEach((track) => {
-    track.innerHTML += track.innerHTML; // seamless loop
-    const dir = track.closest(".marquee").dataset.dir === "right" ? 1 : -1;
-    const tween = gsap.fromTo(track, { xPercent: dir < 0 ? 0 : -50 }, {
-      xPercent: dir < 0 ? -50 : 0, duration: 28, ease: "none", repeat: -1,
-    });
-    if (lenis) lenis.on("scroll", ({ velocity }) => {
-      gsap.to(tween, { timeScale: 1 + Math.min(Math.abs(velocity) * 0.25, 6), duration: 0.2, overwrite: true });
-      gsap.to(tween, { timeScale: 1, duration: 1.2, delay: 0.2 });
-    });
-  });
+    /* smooth scroll */
+    let lenis = null;
+    if (window.Lenis && !reduce) {
+      lenis = new Lenis({ lerp: 0.085, smoothWheel: true, wheelMultiplier: 0.95 });
+      lenis.on("scroll", ScrollTrigger.update);
+      gsap.ticker.add((t) => lenis.raf(t * 1000));
+      gsap.ticker.lagSmoothing(0);
+      document.querySelectorAll('a[href^="#"]').forEach((a) =>
+        a.addEventListener("click", (e) => {
+          const target = document.querySelector(a.getAttribute("href"));
+          if (target) { e.preventDefault(); lenis.scrollTo(target, { offset: -40, duration: 1.6 }); }
+          if (nav) { nav.classList.remove("is-open"); if (toggle) toggle.textContent = "Menü"; }
+        })
+      );
+    }
 
-  /* split headlines into characters that jump up */
-  document.querySelectorAll("[data-split]").forEach((node) => {
-    const walk = (n) => {
-      [...n.childNodes].forEach((c) => {
-        if (c.nodeType === 3) {
-          const frag = document.createDocumentFragment();
-          c.textContent.split(/(\s+)/).forEach((word) => {
-            if (!word) return;
-            if (/^\s+$/.test(word)) { frag.append(" "); return; }
-            const wEl = el("span", "word");
-            [...word].forEach((ch) => { const s = el("span", "char"); s.textContent = ch; wEl.append(s); });
-            frag.append(wEl);
-          });
-          c.replaceWith(frag);
-        } else if (c.nodeType === 1 && c.tagName !== "BR") walk(c);
+    if (reduce) return;
+
+    /* marquee that speeds up with scroll velocity */
+    document.querySelectorAll(".marquee__track").forEach((track) => {
+      track.innerHTML += track.innerHTML; // seamless loop
+      const dir = track.closest(".marquee").dataset.dir === "right" ? 1 : -1;
+      const tween = gsap.fromTo(track, { xPercent: dir < 0 ? 0 : -50 }, {
+        xPercent: dir < 0 ? -50 : 0, duration: 28, ease: "none", repeat: -1,
       });
-    };
-    walk(node);
-    const chars = node.querySelectorAll(".char");
-    gsap.from(chars, {
-      yPercent: 120, rotate: () => rand(-25, 25), opacity: 0,
-      duration: 1.1, ease: "expo.out", stagger: 0.025,
-      delay: node.closest(".hero, .sp-hero, .ph-hero") ? introDelay + 0.2 : 0,
-      scrollTrigger: { trigger: node, start: "top 88%" },
+      if (lenis) lenis.on("scroll", ({ velocity }) => {
+        gsap.to(tween, { timeScale: 1 + Math.min(Math.abs(velocity) * 0.25, 6), duration: 0.2, overwrite: true });
+        gsap.to(tween, { timeScale: 1, duration: 1.2, delay: 0.2 });
+      });
     });
-  });
 
-  /* parallax layers: data-speed="-1 … 2" (higher = faster, negative = against the flow) */
-  document.querySelectorAll("[data-speed]").forEach((n) => {
-    const speed = parseFloat(n.dataset.speed);
-    const host = n.closest("section, header, footer") || n.parentElement;
-    gsap.fromTo(n, { y: () => speed * innerHeight * 0.25 }, {
-      y: () => -speed * innerHeight * 0.25, ease: "none",
-      scrollTrigger: { trigger: host, start: "top bottom", end: "bottom top", scrub: true, invalidateOnRefresh: true },
+    /* split headlines into characters that jump up */
+    document.querySelectorAll("[data-split]").forEach((node) => {
+      const walk = (n) => {
+        [...n.childNodes].forEach((c) => {
+          if (c.nodeType === 3) {
+            const frag = document.createDocumentFragment();
+            c.textContent.split(/(\s+)/).forEach((word) => {
+              if (!word) return;
+              if (/^\s+$/.test(word)) { frag.append(" "); return; }
+              const wEl = el("span", "word");
+              [...word].forEach((ch) => { const s = el("span", "char"); s.textContent = ch; wEl.append(s); });
+              frag.append(wEl);
+            });
+            c.replaceWith(frag);
+          } else if (c.nodeType === 1 && c.tagName !== "BR") walk(c);
+        });
+      };
+      walk(node);
+      const chars = node.querySelectorAll(".char");
+      gsap.from(chars, {
+        yPercent: 120, rotate: () => rand(-25, 25), opacity: 0,
+        duration: 1.1, ease: "expo.out", stagger: 0.025,
+        delay: node.closest(".hero, .sp-hero, .ph-hero") ? introDelay + 0.2 : 0,
+        scrollTrigger: { trigger: node, start: "top 88%" },
+      });
     });
-  });
 
-  /* rotating shapes on scroll */
-  document.querySelectorAll("[data-turn]").forEach((n) => {
-    gsap.to(n, {
-      rotate: parseFloat(n.dataset.turn), ease: "none",
-      scrollTrigger: { trigger: n.closest("section, header, footer") || n, start: "top bottom", end: "bottom top", scrub: true },
+    /* parallax layers: data-speed="-1 … 2" (higher = faster, negative = against the flow) */
+    document.querySelectorAll("[data-speed]").forEach((n) => {
+      const speed = parseFloat(n.dataset.speed);
+      const host = n.closest("section, header, footer") || n.parentElement;
+      gsap.fromTo(n, { y: () => speed * innerHeight * 0.25 }, {
+        y: () => -speed * innerHeight * 0.25, ease: "none",
+        scrollTrigger: { trigger: host, start: "top bottom", end: "bottom top", scrub: true, invalidateOnRefresh: true },
+      });
     });
-  });
 
-  /* stickers flying in from the sides */
-  document.querySelectorAll("[data-fly]").forEach((n) => {
-    const dir = n.dataset.fly;
-    const sign = dir === "left" ? -1 : 1;
-    const from = dir === "up"
-      ? { y: 260, x: 0, rotation: rand(-30, 30), scale: 0.6 }
-      : { x: sign * Math.min(Math.max(innerWidth * 0.65, 260), 900), y: rand(-60, 60), rotation: sign * rand(18, 40), scale: 0.9 };
-    gsap.fromTo(n, { ...from, opacity: 0 }, {
-      x: 0, y: 0, rotation: 0, scale: 1, opacity: 1, ease: "power3.out",
-      scrollTrigger: {
-        trigger: n.dataset.flyTrigger ? n.closest(n.dataset.flyTrigger) : n,
-        start: n.dataset.flyStart || "top 98%", end: n.dataset.flyEnd || "top 52%", scrub: 1.1,
-      },
+    /* rotating shapes on scroll */
+    document.querySelectorAll("[data-turn]").forEach((n) => {
+      gsap.to(n, {
+        rotate: parseFloat(n.dataset.turn), ease: "none",
+        scrollTrigger: { trigger: n.closest("section, header, footer") || n, start: "top bottom", end: "bottom top", scrub: true },
+      });
     });
-  });
 
-  /* big media: rounded window opens, picture settles */
-  document.querySelectorAll("[data-reveal]").forEach((n) => {
-    const media = n.querySelectorAll("img, video");
-    const tl = gsap.timeline({ scrollTrigger: { trigger: n, start: "top bottom", end: "top 15%", scrub: 1 } });
-    tl.fromTo(n, { clipPath: "inset(14% 9% 14% 9% round 60px)" }, { clipPath: "inset(0% 0% 0% 0% round 22px)", ease: "none" }, 0);
-    if (media.length) tl.fromTo(media, { scale: 1.3 }, { scale: 1, ease: "none" }, 0);
-  });
-
-  /* show page: the hero collage flies in from everywhere */
-  const flies = document.querySelectorAll(".collage__fly");
-  if (flies.length) {
-    gsap.from(flies, {
-      x: () => rand(-1, 1) * innerWidth,
-      y: () => (Math.random() < 0.5 ? -1 : 1) * rand(0.6, 1.2) * innerHeight,
-      rotation: () => rand(-70, 70), scale: () => rand(0.2, 0.6), opacity: 0,
-      duration: 1.7, ease: "expo.out", stagger: 0.11, delay: introDelay,
+    /* stickers flying in from the sides */
+    document.querySelectorAll("[data-fly]").forEach((n) => {
+      const dir = n.dataset.fly;
+      const sign = dir === "left" ? -1 : 1;
+      const from = dir === "up"
+        ? { y: 260, x: 0, rotation: rand(-30, 30), scale: 0.6 }
+        : { x: sign * Math.min(Math.max(innerWidth * 0.65, 260), 900), y: rand(-60, 60), rotation: sign * rand(18, 40), scale: 0.9 };
+      gsap.fromTo(n, { ...from, opacity: 0 }, {
+        x: 0, y: 0, rotation: 0, scale: 1, opacity: 1, ease: "power3.out",
+        scrollTrigger: {
+          trigger: n.dataset.flyTrigger ? n.closest(n.dataset.flyTrigger) : n,
+          start: n.dataset.flyStart || "top 98%", end: n.dataset.flyEnd || "top 52%", scrub: 1.1,
+        },
+      });
     });
-    // ...and drifts apart as you scroll away
-    document.querySelectorAll(".collage__item").forEach((item, i) => {
-      gsap.to(item, {
-        x: (i % 2 ? 1 : -1) * innerWidth * 0.18, rotate: (i % 2 ? 1 : -1) * 10, scale: 1.15, ease: "none",
+
+    /* big media: rounded window opens, picture settles */
+    document.querySelectorAll("[data-reveal]").forEach((n) => {
+      const media = n.querySelectorAll("img, video");
+      const tl = gsap.timeline({ scrollTrigger: { trigger: n, start: "top bottom", end: "top 15%", scrub: 1 } });
+      tl.fromTo(n, { clipPath: "inset(14% 9% 14% 9% round 60px)" }, { clipPath: "inset(0% 0% 0% 0% round 22px)", ease: "none" }, 0);
+      if (media.length) tl.fromTo(media, { scale: 1.3 }, { scale: 1, ease: "none" }, 0);
+    });
+
+    /* show page: the hero collage flies in from everywhere */
+    const flies = document.querySelectorAll(".collage__fly");
+    if (flies.length) {
+      gsap.from(flies, {
+        x: () => rand(-1, 1) * innerWidth,
+        y: () => (Math.random() < 0.5 ? -1 : 1) * rand(0.6, 1.2) * innerHeight,
+        rotation: () => rand(-70, 70), scale: () => rand(0.2, 0.6), opacity: 0,
+        duration: 1.7, ease: "expo.out", stagger: 0.11, delay: introDelay,
+      });
+      // ...and drifts apart as you scroll away
+      document.querySelectorAll(".collage__item").forEach((item, i) => {
+        gsap.to(item, {
+          x: (i % 2 ? 1 : -1) * innerWidth * 0.18, rotate: (i % 2 ? 1 : -1) * 10, scale: 1.15, ease: "none",
+          scrollTrigger: { trigger: ".sp-hero", start: "top top", end: "bottom top", scrub: true },
+        });
+      });
+      gsap.to(".sp-hero__title", {
+        scale: 0.82, opacity: 0.2, ease: "none",
         scrollTrigger: { trigger: ".sp-hero", start: "top top", end: "bottom top", scrub: true },
       });
+    }
+
+    /* show page: gallery pictures fly in, alternating sides, in 3D */
+    document.querySelectorAll(".fly-gallery figure").forEach((fig, i) => {
+      const sign = i % 2 ? 1 : -1;
+      const frame = fig.querySelector(".frame");
+      gsap.set(fig, { perspective: 1400 });
+      gsap.fromTo(frame, {
+        x: sign * innerWidth * 0.55, y: 180, rotation: sign * rand(12, 26), rotationY: sign * -35, scale: 0.55, opacity: 0,
+      }, {
+        x: 0, y: 0, rotation: 0, rotationY: 0, scale: 1, opacity: 1, ease: "power2.out",
+        scrollTrigger: { trigger: fig, start: "top 105%", end: "top 30%", scrub: 1.2 },
+      });
+      const img = frame.querySelector("img");
+      if (img) gsap.fromTo(img, { scale: 1.25 }, { scale: 1, ease: "none", scrollTrigger: { trigger: fig, start: "top bottom", end: "bottom top", scrub: true } });
     });
-    gsap.to(".sp-hero__title", {
-      scale: 0.82, opacity: 0.2, ease: "none",
-      scrollTrigger: { trigger: ".sp-hero", start: "top top", end: "bottom top", scrub: true },
+
+    /* home hero photos float in */
+    const heroPhotos = document.querySelectorAll(".hero__photo");
+    if (heroPhotos.length) {
+      gsap.from(heroPhotos, {
+        yPercent: () => rand(80, 160), rotation: () => rand(-40, 40), opacity: 0, scale: 0.6,
+        duration: 1.8, ease: "expo.out", stagger: 0.15, delay: introDelay + 0.1,
+      });
+      gsap.from(".hero__logo", { scale: 0.4, rotation: -90, opacity: 0, duration: 2, ease: "expo.out", delay: introDelay });
+    }
+
+    /* gentle fades for everything else */
+    document.querySelectorAll("[data-fade]").forEach((n) => {
+      gsap.from(n, { y: 50, opacity: 0, duration: 1.2, ease: "expo.out", scrollTrigger: { trigger: n, start: "top 90%" } });
     });
+
+    /* videos only play while visible */
+    document.querySelectorAll("video[data-autoplay]").forEach((v) => {
+      ScrollTrigger.create({
+        trigger: v, start: "top bottom", end: "bottom top",
+        onToggle: (s) => (s.isActive ? v.play().catch(() => {}) : v.pause()),
+      });
+    });
+
+    if (document.readyState === "complete") ScrollTrigger.refresh();
+    else addEventListener("load", () => ScrollTrigger.refresh());
   }
-
-  /* show page: gallery pictures fly in, alternating sides, in 3D */
-  document.querySelectorAll(".fly-gallery figure").forEach((fig, i) => {
-    const sign = i % 2 ? 1 : -1;
-    const frame = fig.querySelector(".frame");
-    gsap.set(fig, { perspective: 1400 });
-    gsap.fromTo(frame, {
-      x: sign * innerWidth * 0.55, y: 180, rotation: sign * rand(12, 26), rotationY: sign * -35, scale: 0.55, opacity: 0,
-    }, {
-      x: 0, y: 0, rotation: 0, rotationY: 0, scale: 1, opacity: 1, ease: "power2.out",
-      scrollTrigger: { trigger: fig, start: "top 105%", end: "top 30%", scrub: 1.2 },
-    });
-    const img = frame.querySelector("img");
-    if (img) gsap.fromTo(img, { scale: 1.25 }, { scale: 1, ease: "none", scrollTrigger: { trigger: fig, start: "top bottom", end: "bottom top", scrub: true } });
-  });
-
-  /* home hero photos float in */
-  const heroPhotos = document.querySelectorAll(".hero__photo");
-  if (heroPhotos.length) {
-    gsap.from(heroPhotos, {
-      yPercent: () => rand(80, 160), rotation: () => rand(-40, 40), opacity: 0, scale: 0.6,
-      duration: 1.8, ease: "expo.out", stagger: 0.15, delay: introDelay + 0.1,
-    });
-    gsap.from(".hero__logo", { scale: 0.4, rotation: -90, opacity: 0, duration: 2, ease: "expo.out", delay: introDelay });
-  }
-
-  /* gentle fades for everything else */
-  document.querySelectorAll("[data-fade]").forEach((n) => {
-    gsap.from(n, { y: 50, opacity: 0, duration: 1.2, ease: "expo.out", scrollTrigger: { trigger: n, start: "top 90%" } });
-  });
-
-  /* videos only play while visible */
-  document.querySelectorAll("video[data-autoplay]").forEach((v) => {
-    ScrollTrigger.create({
-      trigger: v, start: "top bottom", end: "bottom top",
-      onToggle: (s) => (s.isActive ? v.play().catch(() => {}) : v.pause()),
-    });
-  });
-
-  addEventListener("load", () => ScrollTrigger.refresh());
 })();

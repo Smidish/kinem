@@ -745,3 +745,36 @@ html.has-cursor, html.has-cursor * { cursor: none !important; }
 @media (prefers-reduced-motion: reduce) {
   .grain, .spin > svg, .spin-rev > svg, .bob > svg, .curtain img, .scroll-hint i { animation: none; }
 }
+
+/* ==========================================================================
+   PASSWORD GATE
+   ========================================================================== */
+html.locked { overflow: hidden; }
+html.locked body > :not(.gate, .curtain, .grid, .grain, .cursor, .cursor-ring, .cursor-canvas) { display: none !important; }
+
+.gate {
+  position: fixed; inset: 0; z-index: 8000;
+  display: grid; place-content: center; justify-items: center; gap: 1.2rem;
+  padding: var(--gut);
+  text-align: center;
+  background: radial-gradient(ellipse at 50% 30%, var(--bg-3), var(--bg) 65%);
+}
+.gate__logo { width: clamp(140px, 18vw, 220px); animation: wobble 4s ease-in-out infinite; }
+.gate__title { font-size: clamp(2.8rem, 8vw, 6.5rem); }
+.gate__text { margin: 0; max-width: 34ch; color: var(--muted); }
+.gate__form { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1rem; margin-top: 0.6rem; }
+.gate__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.gate__form input {
+  width: min(70vw, 300px);
+  padding: 0.6rem 0.2rem;
+  background: transparent; color: var(--ink);
+  border: 0; border-bottom: 1px solid var(--pink);
+  font-family: var(--f-display); font-style: italic; font-size: 1.6rem;
+  text-align: center;
+}
+.gate__form input::placeholder { color: var(--muted); }
+.gate__form input:focus { outline: none; border-bottom-width: 2px; }
+.gate__form .btn { cursor: pointer; font-family: var(--f-body); }
+.gate__error { min-height: 1.6em; margin: 0; font-family: var(--f-hand); font-size: 1.5rem; color: var(--pink); }
+.gate__form.is-wrong { animation: shake 0.45s; }
+@keyframes shake { 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }

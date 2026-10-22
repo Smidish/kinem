@@ -3,6 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<script>/* password gate: hide the page until the password was entered (see main.js) */
+(function () { var k = "kinem-access", h = "6cd5776c", ok = false;
+  try { ok = localStorage.getItem(k) === h || sessionStorage.getItem(k) === h; } catch (e) {}
+  if (!ok) document.documentElement.classList.add("locked"); })();</script>
 <title>Kollektiv Kinem</title>
 <meta name="description" content="Kollektiv Kinem: zeitgenössischer Zirkus mit Herz und Haltung. Fünf Shows, ein Kollektiv.">
 <meta name="theme-color" content="#0d0a0c">
@@ -61,7 +66,7 @@
     <div class="shape shape--back" style="width:min(28vw,380px);top:4%;right:-6%" data-speed="-0.8" data-turn="120" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 2 98 50 50 98 2 50Z" fill="none" stroke="currentColor" stroke-width="1.2" vector-effect="non-scaling-stroke"/></svg></div>
     <div class="shape shape--front" style="width:56px;top:42%;left:3%" data-speed="1.6" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 0C54 38 62 46 100 50 62 54 54 62 50 100 46 62 38 54 0 50 38 46 46 38 50 0Z" fill="currentColor"/></svg></div>
     <a class="show__media" href="shows/ich-sehe-was.html" data-cursor="Zur Show ♥" data-reveal>
-      <img class="poster" src="assets/img/ich-sehe-was-1.webp" alt="Szene aus Ich sehe was, was du nicht siehst"><video src="assets/video/ich-sehe-was.mp4" poster="assets/img/ich-sehe-was-1.webp" muted loop playsinline preload="none" data-autoplay></video>
+      <img src="assets/img/ich-sehe-was-1.webp" alt="Szene aus Ich sehe was, was du nicht siehst" loading="lazy" decoding="async">
       <span class="badge">Mehr zur Show ↗</span>
     </a>
     <div class="sticker sticker--dark s1" data-fly="left"><h4>Über die Show</h4><p>Eine Wand, zwei Welten. Was sieht man, wenn man die Seite wechselt?</p></div>
