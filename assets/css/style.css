@@ -1,3 +1,32 @@
+@font-face {
+  font-family: "Caveat";
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url("../fonts/caveat.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: swap;
+  src: url("../fonts/fraunces.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: italic;
+  font-weight: 100 700;
+  font-display: swap;
+  src: url("../fonts/fraunces-italic.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("../fonts/space-grotesk.ttf") format("truetype");
+}
+
 /* ==========================================================================
    Kollektiv Kinem — dark, baby-pink, a little bit of glitter
    ========================================================================== */
@@ -740,6 +769,21 @@ html.has-cursor, html.has-cursor * { cursor: none !important; }
   font-family: var(--f-display); font-style: italic; font-weight: 300; font-size: 2rem; color: var(--pink);
 }
 .values span { color: var(--muted); }
+
+/* ---------- FAQ and legal pages ---------- */
+.text-page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 160px var(--gut) 120px;
+}
+.text-page h1 { font-size: clamp(3rem, 10vw, 9rem); margin-bottom: 3rem; }
+.text-page h2 { margin-top: 3rem; color: var(--pink); }
+.text-page h3 { margin-top: 2rem; }
+.text-page p, .text-page li { max-width: 75ch; }
+.text-page a { color: var(--pink); }
+.faq-list { margin: 3rem 0; }
+.faq-list dt { color: var(--pink); font-family: var(--f-display); font-size: clamp(1.5rem, 3vw, 2.6rem); }
+.faq-list dd { margin: 0.5rem 0 2.5rem; color: var(--muted); }
 
 /* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {

@@ -54,16 +54,20 @@
   function sessionStorageSet(k, v) { try { sessionStorage.setItem(k, v); } catch {} }
 
   /* ---------- glitter cursor ---------- */
-  if (finePointer) initCursor();
+  initCursor();
 
   function initCursor() {
-    root.classList.add("has-cursor");
-    const dot = el("div", "cursor");
-    const ring = el("div", "cursor-ring");
+    const dot = finePointer ? el("div", "cursor") : null;
+    const ring = finePointer ? el("div", "cursor-ring") : null;
     const label = document.createElement("span");
-    ring.appendChild(label);
+    if (ring) ring.appendChild(label);
     const canvas = el("canvas", "cursor-canvas");
-    document.body.append(canvas, ring, dot);
+    if (finePointer) {
+      root.classList.add("has-cursor");
+      document.body.append(canvas, ring, dot);
+    } else {
+      document.body.append(canvas);
+    }
     const ctx = canvas.getContext("2d");
     const colors = ["#f8c8d8", "#f2a7c0", "#ffe3ec", "#ffffff", "#ffd6a5"];
     let w, h, dpr;
@@ -92,22 +96,41 @@
       if (parts.length > 220) parts.shift();
     };
 
-    addEventListener("mousemove", (e) => {
-      m.x = e.clientX; m.y = e.clientY;
-      const dist = Math.hypot(m.x - last.x, m.y - last.y);
-      if (dist > 16) { spawn(m.x, m.y); last = { ...m }; }
-    });
-    addEventListener("mousedown", (e) => { for (let i = 0; i < 22; i++) spawn(e.clientX, e.clientY, true); });
-    document.addEventListener("mouseleave", () => (dot.style.opacity = ring.style.opacity = 0));
-    document.addEventListener("mouseenter", () => (dot.style.opacity = ring.style.opacity = ""));
+    if (finePointer) {
+      addEventListener("mousemove", (e) => {
+        m.x = e.clientX; m.y = e.clientY;
+        const dist = Math.hypot(m.x - last.x, m.y - last.y);
+        if (dist > 16) { spawn(m.x, m.y); last = { ...m }; }
+      });
+      addEventListener("mousedown", (e) => { for (let i = 0; i < 22; i++) spawn(e.clientX, e.clientY, true); });
+      document.addEventListener("mouseleave", () => (dot.style.opacity = ring.style.opacity = 0));
+      document.addEventListener("mouseenter", () => (dot.style.opacity = ring.style.opacity = ""));
+      document.addEventListener("mouseover", (e) => {
+        const t = e.target.closest("a, button, [data-cursor]");
+        ring.classList.toggle("is-hover", !!t);
+        const txt = t && t.dataset.cursor;
+        ring.classList.toggle("has-label", !!txt);
+        dot.classList.toggle("is-hidden", !!txt);
+        if (txt) label.textContent = txt;
+      });
+    }
 
-    document.addEventListener("mouseover", (e) => {
-      const t = e.target.closest("a, button, [data-cursor]");
-      ring.classList.toggle("is-hover", !!t);
-      const txt = t && t.dataset.cursor;
-      ring.classList.toggle("has-label", !!txt);
-      dot.classList.toggle("is-hidden", !!txt); // the dot would sit on top of the label
-      if (txt) label.textContent = txt;
+    const touchPoint = (touch) => {
+      const dist = Math.hypot(touch.clientX - last.x, touch.clientY - last.y);
+      if (dist > 12) { spawn(touch.clientX, touch.clientY); last = { x: touch.clientX, y: touch.clientY }; }
+    };
+    addEventListener("touchstart", (e) => {
+      const touch = e.changedTouches[0];
+      if (touch) for (let i = 0; i < 22; i++) spawn(touch.clientX, touch.clientY, true);
+    }, { passive: true });
+    addEventListener("touchmove", (e) => {
+      for (const touch of e.changedTouches) touchPoint(touch);
+    }, { passive: true });
+    document.addEventListener("click", (e) => {
+      const target = e.target.closest("button, .btn");
+      if (!target) return;
+      const rect = target.getBoundingClientRect();
+      for (let i = 0; i < 22; i++) spawn(rect.left + rect.width / 2, rect.top + rect.height / 2, true);
     });
 
     const heart = (s) => {
