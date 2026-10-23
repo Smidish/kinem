@@ -154,8 +154,8 @@
 
     (function tick() {
       r.x += (m.x - r.x) * 0.18; r.y += (m.y - r.y) * 0.18;
-      dot.style.transform = `translate(${m.x}px, ${m.y}px)`;
-      ring.style.transform = `translate(${r.x}px, ${r.y}px)`;
+      if (dot) dot.style.transform = `translate(${m.x}px, ${m.y}px)`;
+      if (ring) ring.style.transform = `translate(${r.x}px, ${r.y}px)`;
 
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, w, h);
