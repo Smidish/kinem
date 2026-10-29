@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <script>/* password gate: hide the page until the password was entered (see main.js) */
-(function () { var k = "kinem-access", h = "6cd5776c", ok = false;
+(function () { var k = "kinem-access", h = "696118c0", ok = false;
   try { ok = localStorage.getItem(k) === h || sessionStorage.getItem(k) === h; } catch (e) {}
   if (!ok) document.documentElement.classList.add("locked"); })();</script>
 <title>Philosophie · Kollektiv Kinem</title>
@@ -25,6 +25,7 @@
     <a href="index.html#shows">Shows</a>
     <a href="faq.html">FAQ</a>
     <a href="philosophie.html" aria-current="page">Philosophie</a>
+    <a href="mitmachen.html">Mitmachen</a>
     <a href="#kontakt">Kontakt</a>
   </nav>
 </header>
@@ -101,6 +102,21 @@
   <div data-fade><strong>Gemeinsam</strong><span>Wir reden über Probleme, finden zusammen und halten die Liebe aufrecht.</span></div>
 </div>
 
+<section class="page-comments" data-comments="kinem-philosophie">
+  <div class="question-board">
+    <div class="question-board__question">
+      <div class="rule"><span>Deine Stimme</span><span>Philosophie</span><span>✦</span></div>
+      <h2 class="display">Was denkst<br><em>du darüber?</em></h2>
+      <form class="comment-form">
+        <label for="comment-philosophie">Dein Kommentar</label>
+        <textarea id="comment-philosophie" maxlength="500" required placeholder="Schreib deine Gedanken hier ..."></textarea>
+        <div class="comment-form__foot"><small>anonym · max. 500 Zeichen</small><button class="btn btn--solid" type="submit">Anheften <span class="arrow">→</span></button></div>
+      </form>
+    </div>
+    <div class="comment-notes" aria-live="polite"></div>
+  </div>
+</section>
+
 <a class="next" href="index.html#shows" data-cursor="Shows ♥">
   <span class="eyebrow">Weiter</span>
   <h2 class="display">Zu den <em>Shows</em></h2>
@@ -128,6 +144,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="assets/js/comments-config.js"></script>
 <script src="assets/js/main.js"></script>
+<script src="assets/js/comments.js"></script>
 </body>
 </html>

@@ -183,7 +183,7 @@
   /* ---------- password gate (a privacy screen, not real security) ---------- */
   // The <head> of every page adds .locked unless the right hash is stored.
   const ACCESS_KEY = "kinem-access";
-  const ACCESS_HASH = "6cd5776c";
+  const ACCESS_HASH = "696118c0";
   const fnv1a = (str) => {
     let h = 0x811c9dc5;
     for (const b of new TextEncoder().encode(str)) h = Math.imul(h ^ b, 0x01000193) >>> 0;
@@ -225,6 +225,7 @@
         input.select();
         return;
       }
+
       try { localStorage.setItem(ACCESS_KEY, ACCESS_HASH); } catch {}
       try { sessionStorage.setItem(ACCESS_KEY, ACCESS_HASH); } catch {}
       root.classList.remove("locked");

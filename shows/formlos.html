@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <script>/* password gate: hide the page until the password was entered (see main.js) */
-(function () { var k = "kinem-access", h = "6cd5776c", ok = false;
+(function () { var k = "kinem-access", h = "696118c0", ok = false;
   try { ok = localStorage.getItem(k) === h || sessionStorage.getItem(k) === h; } catch (e) {}
   if (!ok) document.documentElement.classList.add("locked"); })();</script>
 <title>Formlos · Kollektiv Kinem</title>
@@ -96,6 +96,21 @@
   </ul>
 </section>
 
+<section class="page-comments" data-comments="kinem-show-formlos">
+  <div class="question-board">
+    <div class="question-board__question">
+      <div class="rule"><span>Deine Stimme</span><span>Formlos</span><span>✦</span></div>
+      <h2 class="display">Was denkst<br><em>du darüber?</em></h2>
+      <form class="comment-form">
+        <label for="comment-formlos">Dein Kommentar</label>
+        <textarea id="comment-formlos" maxlength="500" required placeholder="Schreib deine Gedanken hier ..."></textarea>
+        <div class="comment-form__foot"><small>anonym · max. 500 Zeichen</small><button class="btn btn--solid" type="submit">Anheften <span class="arrow">→</span></button></div>
+      </form>
+    </div>
+    <div class="comment-notes" aria-live="polite"></div>
+  </div>
+</section>
+
 <a class="next" href="trinkhalle.html" data-cursor="Weiter ♥">
   <span class="eyebrow">Nächste Show</span>
   <h2 class="display">Trink<em>halle</em></h2>
@@ -123,6 +138,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="../assets/js/comments-config.js"></script>
 <script src="../assets/js/main.js"></script>
+<script src="../assets/js/comments.js"></script>
 </body>
 </html>
